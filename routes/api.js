@@ -29,9 +29,7 @@ router.post('/user/register', async function(req, res, next) {
         };
 
         users.push(newUser)
-        console.log(users)
-
-        res.status(201).json(newUser);
+        res.status(200).json(newUser);
     }
     catch {
         res.status(400);
