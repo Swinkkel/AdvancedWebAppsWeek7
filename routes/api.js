@@ -11,26 +11,25 @@ router.get('/user/list', function(req, res, next) {
     res.json(users);
 });
 
-router.get('/secret', function(req, res, next) {
-
-    res.json(users);
+router.get('/secret', checkAuthenticated, function(req, res, next) {
+    res.status(200).json({message: 'Authenticated'});
 });
 
-router.post('/user/login', async function(req, res, next) {
-    const { username, password} = req.body;
-
-    const user = users.find(user => user.username === username);
-    if (!user) {
-        return res.status(401).json({message: 'Invalid username or password'});
-    }
-
-    const validPwd = await bcrypt.compare(password, user.password);
-    if (!validPwd) {
-        return res.status(401).json({message: 'Invalid username or password'});
-    }
-
-    req.session.userId = user.id;
-    res.status(200).json({message: 'Login successful'});
+router.post('/user/login', checkNotAuthenticated, (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
+        req.logIn(user, (err) => {
+            if (err) {
+                return next(err);
+            }
+            return res.status(200).json({ message: 'Login successful' });
+        });
+    })(req, res, next);
 });
 
 router.post('/user/register', async function(req, res, next) {
@@ -57,5 +56,22 @@ router.post('/user/register', async function(req, res, next) {
         res.status(400);
     }
 });
+
+function checkAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next()
+    }
+
+    return res.status(401).json({message: 'Authentication failed'});
+}
+
+function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return res.redirect("/")
+        
+    }
+
+    return next()
+}
 
 module.exports = router;
