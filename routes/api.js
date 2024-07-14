@@ -11,17 +11,22 @@ router.get('/user/list', function(req, res, next) {
     res.json(users);
 });
 
+router.get('/secret', function(req, res, next) {
+
+    res.json(users);
+});
+
 router.post('/user/login', async function(req, res, next) {
     const { username, password} = req.body;
 
     const user = users.find(user => user.username === username);
     if (!user) {
-        return res.status(400).json({message: 'Invalid username or password'});
+        return res.status(401).json({message: 'Invalid username or password'});
     }
 
     const validPwd = await bcrypt.compare(password, user.password);
     if (!validPwd) {
-        return res.status(400).json({message: 'Invalid username or password'});
+        return res.status(401).json({message: 'Invalid username or password'});
     }
 
     req.session.userId = user.id;
