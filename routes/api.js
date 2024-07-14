@@ -74,4 +74,4 @@ function checkNotAuthenticated(req, res, next) {
     return next()
 }
 
-module.exports = router;
+module.exports = {router, users};
