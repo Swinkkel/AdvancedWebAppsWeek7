@@ -32,7 +32,7 @@ router.post('/user/login', checkNotAuthenticated, (req, res, next) => {
     })(req, res, next);
 });
 
-router.post('/user/register', async function(req, res, next) {
+router.post('/user/register', checkNotAuthenticated, async (req, res, next) => {
     console.log("Register route");
 
     const {username, password} = req.body;
@@ -55,6 +55,17 @@ router.post('/user/register', async function(req, res, next) {
     catch {
         res.status(400);
     }
+});
+
+let todos = [];
+
+router.post('/todos', checkAuthenticated, (req, res, next) => {
+
+
+});
+
+router.get('/todos/list', checkAuthenticated, (req, res, next) => {
+
 });
 
 function checkAuthenticated(req, res, next) {
