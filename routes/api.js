@@ -60,12 +60,19 @@ router.post('/user/register', checkNotAuthenticated, async (req, res, next) => {
 let todos = [];
 
 router.post('/todos', checkAuthenticated, (req, res, next) => {
-
-
+    const { todo } = req.body;
+    let userTodos = todos.find(t => t.id === req.user.id);
+    if (!userTodos) {
+        userTodos = { id: req.user.id, todos: [] };
+        todos.push(userTodos);
+    }
+    userTodos.todos.push(todo);
+    
+    res.json(userTodos);
 });
 
 router.get('/todos/list', checkAuthenticated, (req, res, next) => {
-
+    res.json(todos);
 });
 
 function checkAuthenticated(req, res, next) {
